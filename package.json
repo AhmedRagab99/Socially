@@ -1,0 +1,23 @@
+{
+  "name": "socially",
+  "version": "1.0.0",
+  "description": "a sociall app clone with ios ",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Ahmed Ragab",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.19",
+    "morgan": "^1.10.0",
+    "validator": "^13.1.1"
+  }
+}
