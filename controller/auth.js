@@ -91,7 +91,7 @@ exports.signIn = (req, res) => {
                             keys.JWTSECRET,
                             // one hour
                             {
-                                expiresIn: Math.floor(Date.now() / 1000) + (60 * 60)
+                                expiresIn: "1h"
                             }
                         );
                         // create paylod
@@ -101,7 +101,9 @@ exports.signIn = (req, res) => {
                             email,
                             followers,
                             following,
-                            pic
+                            pic,
+                            createdAt
+
                         } = user;
                         res.json({
                             token,
@@ -112,6 +114,7 @@ exports.signIn = (req, res) => {
                                 followers,
                                 following,
                                 pic,
+                                createdAt
                             },
                         });
                     } else {
