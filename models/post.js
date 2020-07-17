@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const moment = require('moment');
 
 const postSchema = new mongoose.Schema({
   text: {
@@ -10,28 +11,28 @@ const postSchema = new mongoose.Schema({
     default: "no photo",
   },
   creteAt: {
-    type: String,
-    default: Date.now,
+    type: Date,
+    default: moment().format('YYYY-MM-DD'),
   },
-  likes: [
-    {
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+  comments: [{
+    text: String,
+    pic: {
+      type: String,
+      default: "no photo",
+    },
+    created: {
+      type: Date,
+      default: moment().format('YYYY-MM-DD'),
+    },
+    postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-  ],
-  comments: [
-    {
-      text: String,
-      created: {
-        type: String,
-        default: Date.now,
-      },
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    },
-  ],
+  }],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

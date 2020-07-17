@@ -4,13 +4,13 @@ const Post = require("../models/post");
 // get user and posts by passes the userid
 exports.getUser = (req, res) => {
   User.findOne({
-    _id: req.params.userId,
-  })
-    .select("name pic createdAt pic _id followers following")
+      _id: req.params.userId,
+    })
+    .select("name pic createdAt pic _id followers following pio")
     .then((user) => {
       Post.find({
-        user: req.params.userId,
-      })
+          user: req.params.userId,
+        })
         .populate("user", "_id name pic")
         .exec((err, posts) => {
           if (err) {
@@ -46,13 +46,11 @@ exports.allUsers = (req, res) => {
 
 exports.followUser = (req, res) => {
   User.findByIdAndUpdate(
-    req.body.followId,
-    {
+    req.body.followId, {
       $push: {
         followers: req.user._id,
       },
-    },
-    {
+    }, {
       new: true,
     },
     (err, result) => {
@@ -62,16 +60,14 @@ exports.followUser = (req, res) => {
         });
       }
       User.findByIdAndUpdate(
-        req.user._id,
-        {
-          $push: {
-            following: req.body.followId,
-          },
-        },
-        {
-          new: true,
-        }
-      )
+          req.user._id, {
+            $push: {
+              following: req.body.followId,
+            },
+          }, {
+            new: true,
+          }
+        )
         .then((result) => {
           result.password = undefined;
 
@@ -88,13 +84,11 @@ exports.followUser = (req, res) => {
 
 exports.unFollowUser = (req, res) => {
   User.findByIdAndUpdate(
-    req.body.unfollowId,
-    {
+    req.body.unfollowId, {
       $pull: {
         followers: req.user._id,
       },
-    },
-    {
+    }, {
       new: true,
     },
     (err, result) => {
@@ -104,16 +98,14 @@ exports.unFollowUser = (req, res) => {
         });
       }
       User.findByIdAndUpdate(
-        req.user._id,
-        {
-          $pull: {
-            following: req.body.unfollowId,
-          },
-        },
-        {
-          new: true,
-        }
-      )
+          req.user._id, {
+            $pull: {
+              following: req.body.unfollowId,
+            },
+          }, {
+            new: true,
+          }
+        )
         .then((result) => {
           result.password = undefined;
           console.log(result);
@@ -133,11 +125,11 @@ exports.searchUser = (req, res) => {
   // for search
   let userPattern = new RegExp(req.body.name);
   User.find({
-    name: {
-      $regex: userPattern,
-    },
-  })
-    .select("_id name pic email")
+      name: {
+        $regex: userPattern,
+      },
+    })
+    .select("_id name pic email pio")
     .then((user) => {
       res.status(200).json({
         user,

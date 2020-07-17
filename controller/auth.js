@@ -1,7 +1,6 @@
 const User = require("../models/user");
 const registerValidator = require("../validator/register");
 const jwt = require("jsonwebtoken");
-const keys = require("../keys");
 const bycript = require("bcryptjs");
 const signInValidator = require("../validator/login");
 
@@ -26,6 +25,8 @@ exports.signUp = async (req, res) => {
     const email = req.body.email;
     const name = req.body.name;
     const password = req.body.password;
+    const pic = req.body.pic
+    const bio = req.body.pio
     console.log(email);
     const userExists = await User.findOne({
         email: req.body.email,
@@ -39,6 +40,8 @@ exports.signUp = async (req, res) => {
             name,
             password: hashedpassword,
             email,
+            pic,
+            bio
         }).save();
     });
 
@@ -88,7 +91,7 @@ exports.signIn = (req, res) => {
                         const token = jwt.sign({
                                 _id: user._id,
                             },
-                            keys.JWTSECRET,
+                            process.env.JWTSECRET,
                             // one hour
                             {
                                 expiresIn: "1h"
@@ -102,7 +105,8 @@ exports.signIn = (req, res) => {
                             followers,
                             following,
                             pic,
-                            createdAt
+                            createdAt,
+                            pio
 
                         } = user;
                         res.json({
@@ -114,7 +118,8 @@ exports.signIn = (req, res) => {
                                 followers,
                                 following,
                                 pic,
-                                createdAt
+                                createdAt,
+                                pio
                             },
                         });
                     } else {

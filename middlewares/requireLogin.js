@@ -1,7 +1,4 @@
 const jwt = require('jsonwebtoken')
-const {
-    JWTSECRET
-} = require('../keys')
 const mongoose = require('mongoose')
 const User = mongoose.model("User")
 module.exports = (req, res, next) => {
@@ -15,7 +12,7 @@ module.exports = (req, res, next) => {
         })
     }
     const token = authorization.replace("Bearer ", "")
-    jwt.verify(token, JWTSECRET, (err, payload) => {
+    jwt.verify(token, process.env.JWTSECRET, (err, payload) => {
         if (err) {
             return res.status(401).json({
                 error: "Forbidden! Please logg in"

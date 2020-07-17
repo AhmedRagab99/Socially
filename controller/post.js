@@ -1,11 +1,13 @@
 const Post = require("../models/post");
 const postValidator = require("../validator/post");
 const user = require("../models/user");
+const moment = require('moment');
 
 exports.createPost = (req, res) => {
+    var dateTime = moment().format("MMMM Do YYYY, h:mm:ss a")
     const {
         text,
-        pic
+        pic,
     } = req.body;
     if (!text) {
         return res.status(422).json({
@@ -29,7 +31,6 @@ exports.createPost = (req, res) => {
     const post = new Post({
         text,
         pic,
-        createAt: Date.now,
         user: userref,
     });
     console.log(post);
@@ -46,14 +47,10 @@ exports.createPost = (req, res) => {
         });
 };
 
-
-
-
-
-
 exports.getAllPosts = (req, res) => {
     Post.find()
         .populate("user", "name email _id pic createdAt")
+        .populate("comments.postedBy", "_id name pic ")
         .then((posts) => {
             res.status(200).json({
                 count: posts.length,
@@ -71,8 +68,9 @@ exports.getMyPost = (req, res) => {
             user: req.user._id,
         })
         .populate("user", "name email _id pic likes comment")
+        .populate("comments.postedBy", "_id name pic ")
         .sort({
-            creteAt: -1,
+            creteAt: "-1"
         })
         .then((myPosts) => {
             res
@@ -100,6 +98,7 @@ exports.getFollowingPosts = (req, res) => {
             },
         })
         .populate("user", "name email _id pic likes comment")
+        .populate("comments.postedBy", "_id name pic ")
         .sort({
             creteAt: -1,
         })
@@ -193,59 +192,54 @@ exports.unLikePost = (req, res) => {
 };
 
 exports.comment = (req, res) => {
-    const comments = {
+    const comment = {
         text: req.body.text,
-        user: [req.user._id],
-    };
-    //let users = users.$push(comments.user)
-    Post.findOneAndUpdate(
-            req.body.postId, {
-                $push: {
-                    comments: comments,
-                },
-            }, {
-                new: true,
+        postedBy: req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId, {
+            $push: {
+                comments: comment
             }
-        )
-
-        .populate("comments.user", "name _id pic ")
+        }, {
+            new: true
+        })
+        .populate("comments.postedBy", "_id name pic ")
+        .populate("postedBy", "_id name pic")
         .exec((err, result) => {
             if (err) {
                 return res.status(422).json({
-                    message: err,
-                });
+                    error: err
+                })
             } else {
-                res.json(result);
+                res.json(result)
             }
-        });
+        })
 };
 
 exports.uncomment = (req, res) => {
-    const comments = {
+    const comment = {
         text: req.body.text,
-        user: [req.user._id],
-    };
-    Post.findOneAndUpdate(
-            req.body.postId, {
-                $pull: {
-                    comments: comments,
-                },
-            }, {
-                new: true,
+        postedBy: req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId, {
+            $pull: {
+                comments: comment
             }
-        )
-        .populate("user", "name  _id ")
+        }, {
+            new: true
+        })
+        .populate("comments.postedBy", "_id name pic")
+        .populate("postedBy", "_id name pic")
         .exec((err, result) => {
             if (err) {
                 return res.status(422).json({
-                    message: err,
-                });
+                    error: err
+                })
             } else {
-                res.json(result);
+                res.json(result)
             }
-        });
+        })
 };
-
 // with pagination
 exports.getPosts = async (req, res) => {
     // get current page from req.query or use default value of 1
